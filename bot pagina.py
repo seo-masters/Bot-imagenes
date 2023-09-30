@@ -12,7 +12,7 @@ options = webdriver.ChromeOptions()
 options.executable_path = r'C:\driver_chrome\chromedriver.exe'
 
 # Ruta de la carpeta de imágenes
-ruta_imagenes = r"C:\Users\USER\Desktop\imagenes a redimencionar"
+ruta_imagenes = r"C:\Users\USER\Desktop"
 archivos = os.listdir(ruta_imagenes)
 # Obtener la lista de archivos en la carpeta
 archivos = os.listdir(ruta_imagenes)
@@ -140,7 +140,7 @@ for archivo in archivos:
     procesar_imagen()
     time.sleep(4)
     
-    # Descargar la imagen redimensionada
+    # Descarga la imagen redimensionada
     descargar_imagen(nombre_archivo)
     
     # Volver a la página inicial después de procesar una imagen
