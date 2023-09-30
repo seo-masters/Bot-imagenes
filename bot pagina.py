@@ -120,22 +120,23 @@ def descargar_imagen(nombre_archivo):
 for archivo in archivos:
     archivo_a_cargar = cargar_archivo(archivo)
     nombre_archivo = os.path.basename(archivo_a_cargar)  # Obtener el nombre del archivo
-    time.sleep(2)
+    time.sleep(3)
     cargar_imagen(archivo_a_cargar)
-    time.sleep(2)
+    time.sleep(3)
     escalar_imagen()
-    time.sleep(2)
+    time.sleep(3)
     procesar_imagen()
-    time.sleep(2)
+    time.sleep(3)
     cortar_imagen()
-    time.sleep(2)
+    time.sleep(3)
     cambiar_altura()
+    time.sleep(3)
     cambiar_ancho()
-    time.sleep(2)
+    time.sleep(3)
     procesar_imagen()
-    time.sleep(2)
+    time.sleep(3)
     comprimir_imagen()
-    time.sleep(2)
+    time.sleep(3)
     procesar_imagen()
     time.sleep(4)
     
@@ -144,7 +145,7 @@ for archivo in archivos:
     
     # Volver a la página inicial después de procesar una imagen
     driver.get("https://www.iloveimg.com/resize-image")
-    time.sleep(2)
+    time.sleep(4)
 
 # Cerrar el navegador después de procesar todas las imágenes
 driver.quit()
