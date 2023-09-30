@@ -87,7 +87,7 @@ Esta función hace clic en el botón de descarga y descarga la imagen redimensio
 El programa incluye manejo de errores básico para situaciones como problemas al cargar la imagen o al hacer clic en los botones de la página web. Si ocurre algún error, se mostrará un mensaje de error específico para identificar el problema.
 ## Diagrama
 
-![Diagrama de Flujo](diagrama_bot.png)
+![Diagrama de Flujo](diagrama bot.png)
 
 ## Conclusiones
 
