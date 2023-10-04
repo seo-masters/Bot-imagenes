@@ -1,11 +1,13 @@
 # Documentación del Programa de Redimensionamiento de Imágenes
 
-Este documento proporciona una descripción y documentación del código Python proporcionado. El código permite redimensionar imágenes ubicadas en una carpeta específica utilizando el servicio en línea "iloveimg.com". A continuación, se presenta una descripción detallada del programa.
+El programa utiliza la biblioteca Selenium para automatizar la carga, redimensión, compresión y descarga de imágenes desde el sitio web "iloveimg.com". También realiza cambios en los metadatos de las imágenes.
 
 ## Resumen
 
 El código realiza las siguientes acciones:
-
+CREACION DE CARPETAS
+1. Crea las carpetas en el sistema de archivos necesarias para el programa
+BOT PAGINA
 1. Abre el navegador Chrome y navega a la página web "https://www.iloveimg.com/resize-image" utilizando la biblioteca Selenium.
 2. Carga una serie de imágenes ubicadas en una carpeta específica.
 3. Escala cada imagen a un ancho de 1200 píxeles.
@@ -16,15 +18,15 @@ El código realiza las siguientes acciones:
 
 ## Uso
 
-Para utilizar este código, siga los siguientes pasos:
+Para utilizar este programa, siga los siguientes pasos:
 
-1. Asegúrese de tener instalado Python y las siguientes bibliotecas: Selenium y ChromeDriver. Puede descargar ChromeDriver desde [aquí](https://sites.google.com/chromium.org/driver/).
+1. Asegúrese de tener las siguientes bibliotecas y recursos configurados:
 
-2. Modifique la ruta de la carpeta de imágenes en la variable `ruta_imagenes` para que apunte a la carpeta que contiene las imágenes que desea redimensionar.
+   - `selenium`: para la automatización del navegador web.
+   - Tener el controlador de Chrome (`chromedriver.exe`) instalado en la ubicación adecuada y configurado en las opciones de Selenium.
+   - Tener el ejecutable de ExifTool (`exiftool.exe`) en la misma ubicación que el script.
 
-3. Asegúrese de que la ubicación del ejecutable de ChromeDriver esté configurada correctamente en la variable `options.executable_path`. Ajuste esta ruta de acuerdo a la ubicación de su propio ChromeDriver.
-
-4. Ejecute el código y observe cómo se redimensionan y descargan las imágenes automáticamente.
+2. Defina la ruta de origen de las imágenes en la variable `ruta_origen` y las rutas de destino para guardar las imágenes procesadas en la variable `rutas_destino`. El programa iterará sobre las carpetas de imágenes en la ruta de origen y realizará las operaciones necesarias.
 
 ## Componentes y Funciones
 
@@ -62,9 +64,13 @@ Esta función cambia el valor de la altura de la imagen a 628 píxeles utilizand
 
 Esta función hace clic en el botón "Continuar comprimiendo" en la página web para comprimir la imagen.
 
-### `descargar_imagen(nombre_archivo)`
+### `mover_archivos_entre_carpetas(ruta_origen, ruta_destino)`
 
-Esta función hace clic en el botón de descarga y descarga la imagen redimensionada con un nombre específico.
+Esta funcion mueve y distribuye los archivos en sus carpetas correspondientes.
+
+### `modify_metadata_batch(metadata_list)`
+
+Esta funcion modifica los metadatos de todas las imagenes, que se encuentran en las rutas y sus subcarpetas.
 
 ## Flujo del Programa
 
@@ -79,7 +85,8 @@ Esta función hace clic en el botón de descarga y descarga la imagen redimensio
    - Procesa la imagen una vez más para aplicar las modificaciones.
    - Comprime la imagen.
    - Descarga la imagen redimensionada con un nombre específico.
-
+   - Mueve y distribuye los archivos en sus carpetas correspondientes.
+   - Modifica los metadatos de todas las imagenes, que se encuentran en las rutas y sus subcarpetas.
 3. Después de procesar todas las imágenes, el programa cierra el navegador Chrome.
 
 ## Gestión de Errores
@@ -91,4 +98,4 @@ El programa incluye manejo de errores básico para situaciones como problemas al
 
 ## Conclusiones
 
-Este programa automatiza el proceso de redimensionar imágenes de una carpeta específica utilizando el servicio en línea "iloveimg.com". Es útil cuando se necesita redimensionar varias imágenes de manera rápida y sencilla. Asegúrese de tener instaladas las bibliotecas y configuraciones necesarias antes de ejecutar el programa.
+Este programa automatiza el proceso de redimensionar imágenes de una carpeta específica utilizando el servicio en línea "iloveimg.com". Pueden ser útiles en diversas situaciones donde se requiera automatizar estas operaciones en un entorno de trabajo. Asegúrese de tener instaladas las bibliotecas y configuraciones necesarias antes de ejecutar el programa.
