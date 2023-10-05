@@ -8,7 +8,6 @@ import requests
 import time
 import shutil
 import subprocess
-import threading
 exiftool_path = "./exiftool.exe"
 
 
@@ -670,7 +669,6 @@ busquedas = [
     ['', ''],#POST CONSTRUCTION CLEANING
     ['', ''],#RENTAL PROPERTY CLEANING SERVICES
 ]
-
 indice_destino = 0
 numero_ruta = 0
 def cargar_archivo(archivo):
