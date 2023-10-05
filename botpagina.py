@@ -593,9 +593,6 @@ def mover_archivos_entre_carpetas(ruta_origen, ruta_destino):
             except Exception as e:
                 print(f"Error al mover el archivo '{archivo}' a {ruta_destino}: {str(e)}")
 def modify_metadata_batch(metadata_list):
-    # Ruta al ejecutable de ExifTool
-    exiftool_path = "./exiftool.exe"
-
     def modify_metadata(ruta_archivo, metadata):
         nueva_descripcion = metadata.get('descripcion', '')
         nuevo_titulo = metadata.get('titulo', '')
@@ -603,12 +600,18 @@ def modify_metadata_batch(metadata_list):
         nueva_latitud = metadata.get('latitud', '')
         nueva_longitud = metadata.get('longitud', '')
 
+        # Dividir las etiquetas en una lista
+        etiquetas_lista = nuevas_etiquetas.split(', ')
+
+        # Construir una lista de argumentos para Keywords
+        keywords_args = ['-Keywords=' + etiqueta for etiqueta in etiquetas_lista]
+
         # Modificar metadatos con ExifTool para el archivo
         command = [
             exiftool_path,
             '-ImageDescription=' + nueva_descripcion,
             '-Title=' + nuevo_titulo,
-            '-Keywords=' + nuevas_etiquetas,
+            *keywords_args,  # Usar el operador * para desempaquetar la lista de argumentos
             '-GPSLatitude=' + nueva_latitud,
             '-GPSLongitude=' + nueva_longitud,
             '-overwrite_original',  # Sobrescribir el archivo original
