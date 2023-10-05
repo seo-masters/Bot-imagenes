@@ -9,9 +9,9 @@ class PexelsAPI:
         self.api_key = api_key
         self.api_url = "https://api.pexels.com/v1/"
 
-    def search(self, query, per_page=10, page=1):
+    def search(self, query, per_page=2, page=1):
         headers = {
-            "Authorization": f"OtGxtBEsqhLx8gO4kbbbEQfrJsvSRbTNKXRIFrgxhMFpK8IOnCz4I2Rg"
+            "Authorization": self.api_key
         }
 
         try:
@@ -21,7 +21,7 @@ class PexelsAPI:
             )
             if response.status_code == 200:
                 data = response.json()
-                return True, [Photo(photo) for photo in data["photos"]]
+                return True, data
             else:
                 return False, "status_code " + str(response.status_code)
             

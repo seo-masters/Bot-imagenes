@@ -2,11 +2,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
+from APIpexels import PexelsAPI
 import os
+import requests
+import time
 import shutil
 import subprocess
+import threading
 exiftool_path = "./exiftool.exe"
+
 
 ruta_origen = r"C:\Carpeta entrada y salida\imagenes procesadas"
 chrome_options = webdriver.ChromeOptions()
@@ -487,6 +491,185 @@ rutas_imagenes = [
     r"C:\Carpeta entrada y salida\Entrada de imagenes\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\POST CONSTRUCTION CLEANING",
     r"C:\Carpeta entrada y salida\Entrada de imagenes\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\RENTAL PROPERTY CLEANING SERVICES"
 ]
+busquedas = [
+#BOTANICA AMARRES DE AMOR
+    ['raton', 'comida'],#AMARRES DE AMOR
+    ['gatos', 'perros'],#AMULETOS PREPARADOS
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#HIERBAS ESOTERICAS
+    ['', ''],#LECTURA DE CARTAS
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#SANTERIA
+#BOTANICA DEL AMOR
+    ['', ''],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
+    ['', ''],#CENTRO ESPIRITUAL
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#LECTURA DE CARTAS
+    ['', ''],#LECTURA DEL TAROT
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#TIENDA ESOTERICA
+#BOTANICA INDIO AMAZONICO
+    ['', ''],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
+    ['', ''],#CENTRO ESPIRITUAL
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#HIERBAS ESOTERICAS
+    ['', ''],#LECTURA DE CARTAS
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#SANTERIA
+#BOTANICA MAESTROS ESPIRITUALES
+    ['', ''],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
+    ['', ''],#CENTRO ESPIRITUAL
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#LECTURA DE CARTAS
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#TIENDA ESOTERICA
+#BOTANICA SECRETO AZTECA
+    ['', ''],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
+    ['', ''],#CENTRO ESPIRITUAL
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#LECTURA DEL TAROT
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#SANTERIA
+    ['', ''],#TIENDA ESOTERICA
+#BOTANICA VIRGEN MORENA
+    ['', ''],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
+    ['', ''],#BRUJOS
+    ['', ''],#CURACIONES ESPIRITUALES
+    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['', ''],#LECTURA DE CARTAS
+    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['', ''],#SANTERIA
+    ['', ''],#TIENDA ESOTERICA
+#CASH DEALS TODAY
+    ['', ''],#BUYING A HOME WITHOUT FINANCING HOW TO DO IT
+    ['', ''],#BUYING HOMES NO MORTGAGE, CASH ONLY
+    ['', ''],#BUYING HOMES THE POWER OF DIRECT PAYMENT
+    ['', ''],#BUYING IN CASH AN EASY PATH TO HOUSING
+    ['', ''],#BUYING YOUR HOME THE FORMULA FOR SUCCESS IS CASH
+    ['', ''],#CASH AND PROPERTY YOUR FUTURE HOME WITHIN REACH
+    ['', ''],#CASH IN HAND, HOME OWNERSHIP HOW
+    ['', ''],#LIQUID MONEY! BUY YOUR HOUSE RIGHT NOW
+    ['', ''],#NO FINANCING YOUR GUIDE TO BUYING A HOME FOR CASH
+    ['', ''],#QUICK BUY CASH HOMES IN THE SPOTLIGHT
+    ['', ''],#YOUR HOME, YOUR MONEY BUY CASH TODAY
+    ['', ''],#YOUR OWN HOME CASH ON DELIVERY, NO WAITING
+#ELITE CHICAGO SPA-FACIAL
+    ['', ''],#BOTOX CHICAGO
+    ['', ''],#DERMAL FILLERS
+    ['', ''],#DERMAPLANING CHICAGO
+    ['', ''],#FRACTIONAL RADIO FRECUENCY
+    ['', ''],#GLOW FACIAL
+    ['', ''],#MICRODERMABRASION
+    ['', ''],#MICRONEEDLING
+    ['', ''],#PRP (PLATELET RICH PLASMA)
+    ['', ''],#SISTEM CELL PRP
+    ['', ''],#THREAD LIFT
+#ELITE CHICAGO SPA - GRASA
+    ['', ''],#CARBOXITERAPY
+    ['', ''],#CELLULITE REMOVAL
+    ['', ''],#COOL SCULPTING
+    ['', ''],#DOUBLE CHIN REDUCTION
+    ['', ''],#LAKEVIEW MASSAGE SPA
+    ['', ''],#LASER HAIR REMOVAL
+    ['', ''],#LIP FILLERS CHICAGO
+    ['', ''],#LIPO LASER
+    ['', ''],#ULTRA SONIC CAVITATION
+#ELITE FRENCHIES
+    ['', ''],#CARE OF A FRENCH BULLDOG
+    ['', ''],#FRENCH BULLDOG - CHARACTER AND CHARACTERISTICS
+    ['', ''],#FRENCH BULLDOG BREEDERS
+    ['', ''],#FRENCH BULLDOG BREEDING
+    ['', ''],#FRENCH BULLDOG GESTATION, PREGNANCY AND CARE
+    ['', ''],#FRENCH BULLDOG STUD
+    ['', ''],#FRENCH BULLDOG, ONE OF THE WORLD´S BEST COMPANION DOGS
+    ['', ''],#FRENCH BULLDOGS CHARACTERISTICS AND PERSONALITY
+    ['', ''],#KEY ASPECTS TO TAKE GOOD CARE OF A FRENCH BULLDOG
+    ['', ''],#KNOW THE TEMPERAMENT OF THE FRENCH BULLDOG
+    ['', ''],#RARE COLORS IN FRENCH BULLDOGS
+    ['', ''],#THE BULLDOG, THE DOG BREED THAT WILL CONQUER YOUR HEART
+#EXPRESS CLEAN - COMERCIAL
+    ['', ''],#CLEANING SERVICES
+    ['', ''],#COMERCIAL CLEANING SERVICES
+    ['', ''],#EVENT CLEANING
+    ['', ''],#OFFICE CLEANING
+    ['', ''],#RESTAURANT CLEANING SERVICES
+#EXPRESS CLEAN - RESIDENCIAL
+    ['', ''],#AIRBNB CLEANING
+    ['', ''],#APARTAMENT CLEANING
+    ['', ''],#CLEANING SERVICES
+    ['', ''],#DAME DAY CLEANING
+    ['', ''],#HOUSE CLEANING
+    ['', ''],#MAID CLEANING SERVICES
+    ['', ''],#MAID SERVICE SKOKIE IL
+    ['', ''],#MAID SERVICES
+    ['', ''],#MOVE OUT CLEANING
+    ['', ''],#SAME DAY CLEANING
+#LOPEZ Y LOPEZ ABOGADOS
+    ['', ''],#ABOGADOS EN BOSA
+    ['', ''],#ABOGADOS EN CALI
+    ['', ''],#ABOGADOS EN CARTAGENA
+    ['', ''],#ABOGADOS EN CUCUTA
+    ['', ''],#ABOGADOS EN DERECHO ADMINISTRATIVO
+    ['', ''],#ABOGADOS EN ENGATIVA
+    ['', ''],#ABOGADOS EN KENNEDY
+    ['', ''],#ABOGADOS EN SANTA MARTA
+    ['', ''],#ABOGADOS EN USME
+    ['', ''],#ABOGADOS PENALISTAS BOGOTA
+    ['', ''],#DERECHO DE FAMILIA
+#OSCEOLA - COMERCIAL
+    ['', ''],#CHAIN LINK FENCE
+    ['', ''],#CHICAGO STEEL FENCE
+    ['', ''],#COMMERCIAL FENCE INSTALLATION
+    ['', ''],#INDUSTRIAL FENCE COMPANY
+    ['', ''],#IRON BOLLARDS INSTALLATION
+    ['', ''],#IRON FENCE INDUSTRIAL
+    ['', ''],#VINYL FENCE
+    ['', ''],#WOOD FENCE
+    ['', ''],#WROUGHT IRON STAIRCA SES
+#OSCEOLA - RESIDENCIAL
+    ['', ''],#AUTOMATIC GATE
+    ['', ''],#CHAIN LINK FENCE
+    ['', ''],#COMPOSITE FENCE
+    ['', ''],#CUSTOM WROUGHT IRON RAILINGS
+    ['', ''],#FENCE COMPANY WINNETKA
+    ['', ''],#FIRE SCAPES CHICAGO
+    ['', ''],#IRON FENCE
+    ['', ''],#RESIDENTIAL ALUMINUM FENCES
+    ['', ''],#SECURITY CAMERAS SYSTEMS
+    ['', ''],#VINYL FENCE
+    ['', ''],#WOOD FENCE
+    ['', ''],#WROUGHT IRON BALCONY RAILING
+#QUICK CLEANING - COMERCIAL
+    ['', ''],#CLEANING SERVICES
+    ['', ''],#CLEANING SERVICES LOGAN SQUARE
+    ['', ''],#COMMERCIAL CLEANING
+    ['', ''],#DAYCARE CLEANING
+    ['', ''],#DENTAL OFFICE CLEANING
+    ['', ''],#EVENT CLEANING
+    ['', ''],#GYM CLEANING
+    ['', ''],#OFFICE CLEANING
+    ['', ''],#RESTAURANT CLEANING SERVICES
+#QUICK CLEANING - RESIDENCIAL
+    ['', ''],#AIRBNB CLEANING
+    ['', ''],#APARTAMENT CLEANING
+    ['', ''],#DEEP CLEANING SERVICES
+    ['', ''],#HOUSE CLEANING
+    ['', ''],#MAID CLEANING SERVICES
+    ['', ''],#MAID SERVICES
+    ['', ''],#MOVE OUT CLEANING
+    ['', ''],#POST CONSTRUCTION CLEANING
+    ['', ''],#RENTAL PROPERTY CLEANING SERVICES
+]
 
 indice_destino = 0
 numero_ruta = 0
@@ -634,7 +817,32 @@ def modify_metadata_batch(metadata_list):
     for metadata in metadata_list:
         root_folder = metadata['ruta']
         modify_metadata_in_subfolders(root_folder, metadata)
-# Iterar sobre cada ruta de carpeta de imágenes
+def descargar_imagenes_pexels():
+    api = PexelsAPI()
+    numero_carpeta=0
+    while numero_carpeta < len(busquedas):
+        palabras_clave = busquedas[numero_carpeta]
+
+        success, data = api.search(" ".join(palabras_clave))
+
+        if success:
+            for photo in data['photos']:
+                print("Descripción de la imagen:", photo['alt'])
+
+                image_url = photo['src']['original']
+                nombre_archivo = os.path.join(rutas_imagenes[numero_carpeta], os.path.basename(image_url))
+                respuesta = requests.get(image_url)
+
+                if respuesta.status_code == 200:
+                    with open(nombre_archivo, 'wb') as archivo:
+                        archivo.write(respuesta.content)
+                    print(f"Imagen {nombre_archivo} descargada con éxito.")
+                else:
+                    print(f"No se pudo descargar la imagen desde {image_url}. Código de estado: {respuesta.status_code}")
+            numero_carpeta += 1
+        else:
+            print("Error en la búsqueda.")
+descargar_imagenes_pexels()
 for ruta_imagenes in rutas_imagenes:
     archivos = os.listdir(ruta_imagenes)  # Obtener la lista de archivos en la carpeta
 
