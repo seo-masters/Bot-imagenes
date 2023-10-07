@@ -1,6 +1,5 @@
 import requests
-import json
-
+import os
 
 class PexelsAPI:
     def __init__(
@@ -25,13 +24,27 @@ class PexelsAPI:
             else:
                 return False, "status_code " + str(response.status_code)
             
-        except Exception  as e:
+        except Exception as e:
             print(f"Error: {e}")
             raise ValueError(f"Error: {e}")
 
+    def download_photos(self, query, per_page=2, page=1, download_folder="./photos"):
+        success, data = self.search(query, per_page, page)
+        if success:
+            for photo in data.get("photos", []):
+                photo_id = photo["id"]
+                photo_url = photo["src"]["original"]
+                photo_extension = photo_url.split(".")[-1]
+                photo_filename = f"{photo_id}.{photo_extension}"
+                photo_path = os.path.join(download_folder, photo_filename)
 
-class Photo:
-    def __init__(self, data):
-        self.id = data["id"]
-        self.url = data["url"]
-        self.alt = data["alt"]
+                try:
+                    response = requests.get(photo_url)
+                    if response.status_code == 200:
+                        with open(photo_path, "wb") as file:
+                            file.write(response.content)
+                        print(f"Descargada la foto: {photo_filename}")
+                    else:
+                        print(f"No se pudo descargar la foto: {photo_filename}, status_code {response.status_code}")
+                except Exception as e:
+                    print(f"Error al descargar la foto: {photo_filename}, Error: {e}")

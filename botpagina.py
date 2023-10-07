@@ -3,14 +3,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from APIpexels import PexelsAPI
+from APIpixabite import PixabayAPI 
 import os
 import requests
 import time
 import shutil
 import subprocess
 exiftool_path = "./exiftool.exe"
-
-
 ruta_origen = r"C:\Carpeta entrada y salida\imagenes procesadas"
 chrome_options = webdriver.ChromeOptions()
 chrome_options.executable_path = r'C:\driver_chrome\chromedriver.exe'
@@ -492,8 +491,8 @@ rutas_imagenes = [
 ]
 busquedas = [
 #BOTANICA AMARRES DE AMOR
-    ['raton', 'comida'],#AMARRES DE AMOR
-    ['gatos', 'perros'],#AMULETOS PREPARADOS
+    ['amor', 'corazon amor'],#AMARRES DE AMOR
+    ['', ''],#AMULETOS PREPARADOS
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#HIERBAS ESOTERICAS
@@ -671,6 +670,7 @@ busquedas = [
 ]
 indice_destino = 0
 numero_ruta = 0
+wait = WebDriverWait(driver, 200)  
 def cargar_archivo(archivo):
     archivo_a_cargar = os.path.join(ruta_imagenes, archivo)
     # Aquí puedes realizar las operaciones que necesitas con el archivo cargado
@@ -817,9 +817,15 @@ def modify_metadata_batch(metadata_list):
         modify_metadata_in_subfolders(root_folder, metadata)
 def descargar_imagenes_pexels():
     api = PexelsAPI()
-    numero_carpeta=0
+    numero_carpeta = 0
     while numero_carpeta < len(busquedas):
         palabras_clave = busquedas[numero_carpeta]
+
+        # Verificar si la primera palabra clave está vacía
+        if palabras_clave[0].strip() == "":
+            print("La primera palabra clave está vacía. Saltando a la siguiente búsqueda.")
+            numero_carpeta += 1
+            continue
 
         success, data = api.search(" ".join(palabras_clave))
 
@@ -841,6 +847,7 @@ def descargar_imagenes_pexels():
         else:
             print("Error en la búsqueda.")
 descargar_imagenes_pexels()
+
 for ruta_imagenes in rutas_imagenes:
     archivos = os.listdir(ruta_imagenes)  # Obtener la lista de archivos en la carpeta
 
@@ -852,24 +859,23 @@ for ruta_imagenes in rutas_imagenes:
         cargar_imagen(archivo_a_cargar)
         time.sleep(3)
         escalar_imagen()
-        time.sleep(3)
+        time.sleep(2)
         procesar_imagen()
-        time.sleep(3)
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//li[@data-title='Continue to Crop IMAGE']")))
         cortar_imagen()
         time.sleep(3)
         cambiar_altura()
-        time.sleep(3)
+        time.sleep(2)
         cambiar_ancho()
         time.sleep(3)
         procesar_imagen()
-        time.sleep(3)
+        wait.until(EC.visibility_of_element_located((By.XPATH, "//li[@data-title='Continue to Compress IMAGE']")))
         comprimir_imagen()
-        time.sleep(3)
+        wait.until(EC.visibility_of_element_located((By.ID, "processTask")))
         procesar_imagen()
-        time.sleep(4)
+        wait.until(EC.visibility_of_element_located((By.ID, "pickfiles")))
         descargar_imagen(nombre_archivo)
-        time.sleep(4)
-
+        time.sleep(2)
         # Después de procesar la imagen y descargarla, mover archivos
         mover_archivos_entre_carpetas(ruta_origen, rutas_destino[numero_ruta])
         time.sleep(4)
