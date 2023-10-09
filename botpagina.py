@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from APIpexels import PexelsAPI
-from APIpixabite import PixabayAPI 
+from APIpixabite import PixabayAPI
 import os
 import requests
 import time
@@ -762,6 +762,12 @@ def descargar_imagen(nombre_archivo):
     except Exception as e:
         print(f"Ocurrió un error al hacer clic en el botón de descarga: {e}")
 def mover_archivos_entre_carpetas(ruta_origen, ruta_destino):
+    """le encanta succionar miembros viriles masculinos
+
+    Args:
+        ruta_origen (string): esto es una ruta de carpeta
+        ruta_destino (string): esto es una ruta de carpeta
+    """
     # Itera sobre los archivos en la carpeta de origen y muévelos a la ruta de destino
     for archivo in os.listdir(ruta_origen):
         ruta_archivo_origen = os.path.join(ruta_origen, archivo)
@@ -846,7 +852,52 @@ def descargar_imagenes_pexels():
             numero_carpeta += 1
         else:
             print("Error en la búsqueda.")
-descargar_imagenes_pexels()
+
+
+def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
+    api_key = "39882178-93a7eee8f4fa8bb659ed1f39a"  # Reemplaza con tu clave de API de Pixabay
+    numero_carpeta = 0
+    while numero_carpeta < len(busquedas):
+        palabras_clave = busquedas[numero_carpeta]
+
+        # Verificar si la primera palabra clave está vacía
+        if palabras_clave[0].strip() == "":
+            print("La primera palabra clave está vacía. Saltando a la siguiente búsqueda.")
+            numero_carpeta += 1
+            continue
+
+        cantidad_descargar = cantidad_por_busqueda
+        pagina = 1
+        while cantidad_descargar > 0:
+            url = f"https://pixabay.com/api/?key={api_key}&q={'+'.join(palabras_clave)}&per_page=200&page={pagina}"
+            response = requests.get(url)
+            data = response.json()
+
+            if "hits" in data:
+                hits = data["hits"]
+                for i, imagen in enumerate(hits):
+                    if cantidad_descargar <= 0:
+                        break
+
+                    imagen_url = imagen["largeImageURL"]
+                    response = requests.get(imagen_url)
+
+                    if response.status_code == 200:
+                        # Guardar la imagen en la carpeta de descargas
+                        with open(os.path.join(rutas_imagenes[numero_carpeta], f"imagen_{i+1}.jpg"), "wb") as file:
+                            file.write(response.content)
+                        cantidad_descargar -= 1
+
+                pagina += 1
+            else:
+                print("Error en la respuesta de Pixabay API.")
+                break
+
+        numero_carpeta += 1
+
+# Llama a la función para descargar imágenes de Pixabay
+cantidad_por_busqueda = 10  # Puedes ajustar esta cantidad según tus necesidades
+descargar_imagenes_pixabay(cantidad_por_busqueda)
 
 for ruta_imagenes in rutas_imagenes:
     archivos = os.listdir(ruta_imagenes)  # Obtener la lista de archivos en la carpeta
