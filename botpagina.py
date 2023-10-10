@@ -491,7 +491,7 @@ rutas_imagenes = [
 ]
 busquedas = [
 #BOTANICA AMARRES DE AMOR
-    ['amor', 'corazon amor'],#AMARRES DE AMOR
+    ['', ''],#AMARRES DE AMOR
     ['', ''],#AMULETOS PREPARADOS
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
@@ -506,7 +506,7 @@ busquedas = [
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#LECTURA DE CARTAS
-    ['', ''],#LECTURA DEL TAROT
+    ['cartas', 'adivinacion','tarot'],#LECTURA DEL TAROT
     ['', ''],#LIMPIEZAS ESPIRITUALES
     ['', ''],#TIENDA ESOTERICA
 #BOTANICA INDIO AMAZONICO
@@ -657,17 +657,9 @@ busquedas = [
     ['', ''],#GYM CLEANING
     ['', ''],#OFFICE CLEANING
     ['', ''],#RESTAURANT CLEANING SERVICES
-#QUICK CLEANING - RESIDENCIAL
-    ['', ''],#AIRBNB CLEANING
-    ['', ''],#APARTAMENT CLEANING
-    ['', ''],#DEEP CLEANING SERVICES
-    ['', ''],#HOUSE CLEANING
-    ['', ''],#MAID CLEANING SERVICES
-    ['', ''],#MAID SERVICES
-    ['', ''],#MOVE OUT CLEANING
-    ['', ''],#POST CONSTRUCTION CLEANING
-    ['', ''],#RENTAL PROPERTY CLEANING SERVICES
+    # Agrega más búsquedas aquí si es necesario
 ]
+
 indice_destino = 0
 numero_ruta = 0
 wait = WebDriverWait(driver, 200)  
@@ -854,6 +846,9 @@ def descargar_imagenes_pexels():
             print("Error en la búsqueda.")
 
 
+import requests
+import os
+
 def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
     api_key = "39882178-93a7eee8f4fa8bb659ed1f39a"  # Reemplaza con tu clave de API de Pixabay
     numero_carpeta = 0
@@ -875,6 +870,12 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
 
             if "hits" in data:
                 hits = data["hits"]
+
+                # Verificar si no hay más resultados en esta página
+                if len(hits) == 0:
+                    print("No se encontraron más imágenes en esta búsqueda. Pasando a la siguiente búsqueda.")
+                    break
+
                 for i, imagen in enumerate(hits):
                     if cantidad_descargar <= 0:
                         break
@@ -896,7 +897,7 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
         numero_carpeta += 1
 
 # Llama a la función para descargar imágenes de Pixabay
-cantidad_por_busqueda = 10  # Puedes ajustar esta cantidad según tus necesidades
+cantidad_por_busqueda = 200  # Puedes ajustar esta cantidad según tus necesidades
 descargar_imagenes_pixabay(cantidad_por_busqueda)
 
 for ruta_imagenes in rutas_imagenes:
