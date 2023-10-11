@@ -481,8 +481,9 @@ alto_deseado = 628
 indice_destino = 0
 numero_ruta = 0
 
+
 def procesar_imagenes_en_carpeta(carpeta, ancho_deseado, alto_deseado):
-    # Función para redimensionar y recortar una imagen
+    
     def redimensionar_y_recortar(imagen, ancho, alto):
         ancho_original, alto_original = imagen.size
         proporcion = ancho_original / alto_original
@@ -504,29 +505,31 @@ def procesar_imagenes_en_carpeta(carpeta, ancho_deseado, alto_deseado):
         imagen_recortada = imagen_redimensionada.crop((izquierda, arriba, derecha, abajo))
         return imagen_recortada
 
-    # Recorrer todos los archivos en la carpeta actual
     for archivo in os.listdir(carpeta):
         ruta_completa = os.path.join(carpeta, archivo)
         
         # Verificar si el archivo es una imagen válida
-        if archivo.lower().endswith((".jpg", ".jpeg", ".png")):
+        if archivo.lower().endswith((".jpg")):
             try:
                 imagen = Image.open(ruta_completa)
                 imagen_procesada = redimensionar_y_recortar(imagen, ancho_deseado, alto_deseado)
+                
+                # Convertir la imagen a modo adecuado si tiene canal alfa
+                if imagen_procesada.mode == 'LA':
+                    imagen_procesada = imagen_procesada.convert('L')
+                elif imagen_procesada.mode == 'RGBA':
+                    imagen_procesada = imagen_procesada.convert('RGB')
 
                 # Reemplazar el archivo original con la imagen procesada
                 imagen_procesada.save(ruta_completa)
             except Exception as e:
                 print(f"Error al procesar {ruta_completa}: {str(e)}")
-
-
                 # Eliminar el archivo dañado
                 os.remove(ruta_completa)
 
     # Recorrer todas las subcarpetas de manera recursiva
     for subcarpeta in os.listdir(carpeta):
         ruta_subcarpeta = os.path.join(carpeta, subcarpeta)
-
         if os.path.isdir(ruta_subcarpeta):
             procesar_imagenes_en_carpeta(ruta_subcarpeta, ancho_deseado, alto_deseado)
 
@@ -694,9 +697,12 @@ def process_images_in_directory(carpeta_principal, max_size_kb=300):
                 input_path = os.path.join(root, filename)
                 
                 optimize_image(input_path, max_size_kb=max_size_kb)
-
-# Llama a la función para descargar imágenes de Pixabay
-cantidad_por_busqueda = 1  # Puedes ajustar esta cantidad según tus necesidades
+try:
+    cantidad_por_busqueda = int(input("Ingresa la cantidad de imágenes que deseas descargar por búsqueda: "))
+except ValueError:
+    print("Por favor, ingresa un número válido.")
+    exit()
+# Llama a la función para descargar imágenes de Pixabay 
 descargar_imagenes_pixabay(cantidad_por_busqueda)
 time.sleep(2)
 procesar_imagenes_en_carpeta_principal(carpeta_principal, ancho_deseado, alto_deseado)
