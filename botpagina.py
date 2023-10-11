@@ -1,26 +1,13 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from APIpexels import PexelsAPI
 from APIpixabite import PixabayAPI
 import os
 import requests
 import time
-import shutil
+import pyguetzli
 import subprocess
+from PIL import Image
+carpeta_principal = r"C:\Carpeta entrada y salida"
 exiftool_path = "./exiftool.exe"
-ruta_origen = r"C:\Carpeta entrada y salida\imagenes procesadas"
-chrome_options = webdriver.ChromeOptions()
-chrome_options.executable_path = r'C:\driver_chrome\chromedriver.exe'
-# Configurar la ruta de descargas
-prefs = {"download.default_directory": ruta_origen}
-chrome_options.add_experimental_option("prefs", prefs)
-# Iniciar el navegador con las opciones configuradas
-driver = webdriver.Chrome(options=chrome_options)
-driver.get("https://www.iloveimg.com/resize-image")
-driver.maximize_window()
-
 # Lista de metadatos a procesar
 metadata_list = [
     {
@@ -127,187 +114,6 @@ metadata_list = [
         'latitud': '41.84444242421529',
         'longitud': '-87.70470567627932'
     }
-]
-# Lista de rutas de destino
-rutas_destino = [    
-    # Botanica amarres de amor
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\HIERBAS ESOTERICAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\LECTURA DE CARTAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA AMARRES DE AMOR\SANTERIA",
-    # Botanica del amor
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\CENTRO ESPIRITUAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\LECTURA DE CARTAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\LECTURA DEL TAROT",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA DEL AMOR\TIENDA ESOTERICA",
-    # Botanica indio amazonico
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\CENTRO ESPIRITUAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\HIERBAS ESOTERICAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\LECTURA DE CARTAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA INDIO AMAZONICO\SANTERIA",
-    # Botanica maestros espirituales
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\CENTRO ESPIRITUAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\LECTURA DE CARTAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA MAESTROS ESPIRITUALES\TIENDA ESOTERICA",
-    # Botanica secreto azteca
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\CENTRO ESPIRITUAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\LECTURA DEL TAROT",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\SANTERIA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA SECRETO AZTECA\TIENDA ESOTERICA",
-    # Botanica virgen morena
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\AMARRES DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\AMULETOS PREPARADOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\BRUJOS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\CURACIONES ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\ENDULZAMIENTOS DE AMOR",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\LECTURA DE CARTAS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\LIMPIEZAS ESPIRITUALES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\SANTERIA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\BOTANICA VIRGEN MORENA\TIENDA ESOTERICA",
-    # Cash deals today
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\BUYING A HOME WITHOUT FINANCING HOW TO DO IT",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\BUYING HOMES NO MORTGAGE, CASH ONLY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\BUYING HOMES THE POWER OF DIRECT PAYMENT",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\BUYING IN CASH AN EASY PATH TO HOUSING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\BUYING YOUR HOME THE FORMULA FOR SUCCESS IS CASH",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\CASH AND PROPERTY YOUR FUTURE HOME WITHIN REACH",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\CASH IN HAND, HOME OWNERSHIP HOW",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\LIQUID MONEY! BUY YOUR HOUSE RIGHT NOW",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\NO FINANCING YOUR GUIDE TO BUYING A HOME FOR CASH",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\QUICK BUY CASH HOMES IN THE SPOTLIGHT",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\YOUR HOME, YOUR MONEY BUY CASH TODAY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\CASH DEALS TODAY\YOUR OWN HOME CASH ON DELIVERY, NO WAITING",
-    # Elite chicago spa- facial
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\BOTOX CHICAGO",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\DERMAL FILLERS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\DERMAPLANING CHICAGO",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\FRACTIONAL RADIO FRECUENCY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\GLOW FACIAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\MICRODERMABRASION",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\MICRONEEDLING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\PRP (PLATELET RICH PLASMA)",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\SISTEM CELL PRP",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - FACIAL\THREAD LIFT",
-    # Elite chicago spa- grasa
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\CARBOXITERAPY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\CELLULITE REMOVAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\COOL SCULPTING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\DOUBLE CHIN REDUCTION",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\LAKEVIEW MASSAGE SPA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\LASER HAIR REMOVAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\LIP FILLERS CHICAGO",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\LIPO LASER",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE CHICAGO SPA\ELITE CHICAGO SPA - GRASA\ULTRA SONIC CAVITATION",
-    # Elite frenchies
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\CARE OF A FRENCH BULLDOG",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG - CHARACTER AND CHARACTERISTICS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG BREEDERS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG BREEDING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG GESTATION, PREGNANCY AND CARE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG STUD",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOG, ONE OF THE WORLD´S BEST COMPANION DOGS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\FRENCH BULLDOGS CHARACTERISTICS AND PERSONALITY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\KEY ASPECTS TO TAKE GOOD CARE OF A FRENCH BULLDOG",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\KNOW THE TEMPERAMENT OF THE FRENCH BULLDOG",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\RARE COLORS IN FRENCH BULLDOGS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\ELITE FRENCHIES\THE BULLDOG, THE DOG BREED THAT WILL CONQUER YOUR HEART",
-    # Express clean - comercial
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - COMERCIAL\CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - COMERCIAL\COMERCIAL CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - COMERCIAL\EVENT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - COMERCIAL\OFFICE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - COMERCIAL\RESTAURANT CLEANING SERVICES",
-    # Express clean - residencial
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\AIRBNB CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\APARTAMENT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\DAME DAY CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\HOUSE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\MAID CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\MAID SERVICE SKOKIE IL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\MAID SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\MOVE OUT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\EXPRESS CLEAN\EXPRESS CLEAN - RESIDENCIAL\SAME DAY CLEANING",
-    # Lopez y Lopez abogados
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN BOSA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN CALI",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN CARTAGENA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN CUCUTA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN DERECHO ADMINISTRATIVO",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN ENGATIVA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN KENNEDY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN SANTA MARTA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS EN USME",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\ABOGADOS PENALISTAS BOGOTA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\LOPEZ Y LOPEZ ABOGADOS\DERECHO DE FAMILIA",
-    # Oceola - comercial
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\CHAIN LINK FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\CHICAGO STEEL FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\COMMERCIAL FENCE INSTALLATION",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\INDUSTRIAL FENCE COMPANY",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\IRON BOLLARDS INSTALLATION",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\IRON FENCE INDUSTRIAL",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\VINYL FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\WOOD FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - COMERCIAL\WROUGHT IRON STAIRCASES",
-    # Oceola - residencial
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\AUTOMATIC GATE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\CHAIN LINK FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\COMPOSITE FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\CUSTOM WROUGHT IRON RAILINGS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\FENCE COMPANY WINNETKA",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\FIRE SCAPES CHICAGO",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\IRON FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\RESIDENTIAL ALUMINUM FENCES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\SECURITY CAMERAS SYSTEMS",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\VINYL FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\WOOD FENCE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\OSCEOLA\OSCEOLA - RESIDENCIAL\WROUGHT IRON BALCONY RAILING",
-    # Quick cleaning - comercial
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\CLEANING SERVICES LOGAN SQUARE",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\COMMERCIAL CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\DAYCARE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\DENTAL OFFICE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\EVENT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\GYM CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\OFFICE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - COMERCIAL\RESTAURANT CLEANING SERVICES",
-    # Quick cleaning - residencial
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\AIRBNB CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\APARTAMENT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\DEEP CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\HOUSE CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\MAID CLEANING SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\MAID SERVICES",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\MOVE OUT CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\POST CONSTRUCTION CLEANING",
-    r"C:\Carpeta entrada y salida\Salida de imagen\QUICK CLEANING\QUICK CLEANING - RESIDENCIAL\RENTAL PROPERTY CLEANING SERVICES"
-
 ]
 # Lista de rutas de carpetas de imágenes a procesar
 rutas_imagenes = [
@@ -492,7 +298,7 @@ rutas_imagenes = [
 busquedas = [
 #BOTANICA AMARRES DE AMOR
     ['', ''],#AMARRES DE AMOR
-    ['', ''],#AMULETOS PREPARADOS
+    ['amuletos'],#AMULETOS PREPARADOS
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#HIERBAS ESOTERICAS
@@ -506,7 +312,7 @@ busquedas = [
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#LECTURA DE CARTAS
-    ['cartas', 'adivinacion','tarot'],#LECTURA DEL TAROT
+    ['adivinacion'],#LECTURA DEL TAROT
     ['', ''],#LIMPIEZAS ESPIRITUALES
     ['', ''],#TIENDA ESOTERICA
 #BOTANICA INDIO AMAZONICO
@@ -517,10 +323,10 @@ busquedas = [
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#HIERBAS ESOTERICAS
     ['', ''],#LECTURA DE CARTAS
-    ['', ''],#LIMPIEZAS ESPIRITUALES
+    ['meditacion'],#LIMPIEZAS ESPIRITUALES
     ['', ''],#SANTERIA
 #BOTANICA MAESTROS ESPIRITUALES
-    ['', ''],#AMARRES DE AMOR
+    ['parejas'],#AMARRES DE AMOR
     ['', ''],#AMULETOS PREPARADOS
     ['', ''],#CENTRO ESPIRITUAL
     ['', ''],#CURACIONES ESPIRITUALES
@@ -531,7 +337,7 @@ busquedas = [
 #BOTANICA SECRETO AZTECA
     ['', ''],#AMARRES DE AMOR
     ['', ''],#AMULETOS PREPARADOS
-    ['', ''],#CENTRO ESPIRITUAL
+    ['cementerio'],#CENTRO ESPIRITUAL
     ['', ''],#CURACIONES ESPIRITUALES
     ['', ''],#ENDULZAMIENTOS DE AMOR
     ['', ''],#LECTURA DEL TAROT
@@ -543,13 +349,13 @@ busquedas = [
     ['', ''],#AMULETOS PREPARADOS
     ['', ''],#BRUJOS
     ['', ''],#CURACIONES ESPIRITUALES
-    ['', ''],#ENDULZAMIENTOS DE AMOR
+    ['san valentin dulce'],#ENDULZAMIENTOS DE AMOR
     ['', ''],#LECTURA DE CARTAS
     ['', ''],#LIMPIEZAS ESPIRITUALES
     ['', ''],#SANTERIA
     ['', ''],#TIENDA ESOTERICA
 #CASH DEALS TODAY
-    ['', ''],#BUYING A HOME WITHOUT FINANCING HOW TO DO IT
+    ['comprar hogar'],#BUYING A HOME WITHOUT FINANCING HOW TO DO IT
     ['', ''],#BUYING HOMES NO MORTGAGE, CASH ONLY
     ['', ''],#BUYING HOMES THE POWER OF DIRECT PAYMENT
     ['', ''],#BUYING IN CASH AN EASY PATH TO HOUSING
@@ -562,7 +368,7 @@ busquedas = [
     ['', ''],#YOUR HOME, YOUR MONEY BUY CASH TODAY
     ['', ''],#YOUR OWN HOME CASH ON DELIVERY, NO WAITING
 #ELITE CHICAGO SPA-FACIAL
-    ['', ''],#BOTOX CHICAGO
+    ['botox'],#BOTOX CHICAGO
     ['', ''],#DERMAL FILLERS
     ['', ''],#DERMAPLANING CHICAGO
     ['', ''],#FRACTIONAL RADIO FRECUENCY
@@ -573,7 +379,7 @@ busquedas = [
     ['', ''],#SISTEM CELL PRP
     ['', ''],#THREAD LIFT
 #ELITE CHICAGO SPA - GRASA
-    ['', ''],#CARBOXITERAPY
+    ['piel cuidado'],#CARBOXITERAPY
     ['', ''],#CELLULITE REMOVAL
     ['', ''],#COOL SCULPTING
     ['', ''],#DOUBLE CHIN REDUCTION
@@ -583,7 +389,7 @@ busquedas = [
     ['', ''],#LIPO LASER
     ['', ''],#ULTRA SONIC CAVITATION
 #ELITE FRENCHIES
-    ['', ''],#CARE OF A FRENCH BULLDOG
+    ['bulldog'],#CARE OF A FRENCH BULLDOG
     ['', ''],#FRENCH BULLDOG - CHARACTER AND CHARACTERISTICS
     ['', ''],#FRENCH BULLDOG BREEDERS
     ['', ''],#FRENCH BULLDOG BREEDING
@@ -596,14 +402,14 @@ busquedas = [
     ['', ''],#RARE COLORS IN FRENCH BULLDOGS
     ['', ''],#THE BULLDOG, THE DOG BREED THAT WILL CONQUER YOUR HEART
 #EXPRESS CLEAN - COMERCIAL
-    ['', ''],#CLEANING SERVICES
+    ['servicio limpieza'],#CLEANING SERVICES
     ['', ''],#COMERCIAL CLEANING SERVICES
     ['', ''],#EVENT CLEANING
     ['', ''],#OFFICE CLEANING
     ['', ''],#RESTAURANT CLEANING SERVICES
 #EXPRESS CLEAN - RESIDENCIAL
     ['', ''],#AIRBNB CLEANING
-    ['', ''],#APARTAMENT CLEANING
+    ['limpieza hogar'],#APARTAMENT CLEANING
     ['', ''],#CLEANING SERVICES
     ['', ''],#DAME DAY CLEANING
     ['', ''],#HOUSE CLEANING
@@ -613,7 +419,7 @@ busquedas = [
     ['', ''],#MOVE OUT CLEANING
     ['', ''],#SAME DAY CLEANING
 #LOPEZ Y LOPEZ ABOGADOS
-    ['', ''],#ABOGADOS EN BOSA
+    ['abogados'],#ABOGADOS EN BOSA
     ['', ''],#ABOGADOS EN CALI
     ['', ''],#ABOGADOS EN CARTAGENA
     ['', ''],#ABOGADOS EN CUCUTA
@@ -625,7 +431,7 @@ busquedas = [
     ['', ''],#ABOGADOS PENALISTAS BOGOTA
     ['', ''],#DERECHO DE FAMILIA
 #OSCEOLA - COMERCIAL
-    ['', ''],#CHAIN LINK FENCE
+    ['cerca de alambre'],#CHAIN LINK FENCE
     ['', ''],#CHICAGO STEEL FENCE
     ['', ''],#COMMERCIAL FENCE INSTALLATION
     ['', ''],#INDUSTRIAL FENCE COMPANY
@@ -638,7 +444,7 @@ busquedas = [
     ['', ''],#AUTOMATIC GATE
     ['', ''],#CHAIN LINK FENCE
     ['', ''],#COMPOSITE FENCE
-    ['', ''],#CUSTOM WROUGHT IRON RAILINGS
+    ['barandas'],#CUSTOM WROUGHT IRON RAILINGS
     ['', ''],#FENCE COMPANY WINNETKA
     ['', ''],#FIRE SCAPES CHICAGO
     ['', ''],#IRON FENCE
@@ -648,7 +454,7 @@ busquedas = [
     ['', ''],#WOOD FENCE
     ['', ''],#WROUGHT IRON BALCONY RAILING
 #QUICK CLEANING - COMERCIAL
-    ['', ''],#CLEANING SERVICES
+    ['limpieza hogar'],#CLEANING SERVICES
     ['', ''],#CLEANING SERVICES LOGAN SQUARE
     ['', ''],#COMMERCIAL CLEANING
     ['', ''],#DAYCARE CLEANING
@@ -657,120 +463,77 @@ busquedas = [
     ['', ''],#GYM CLEANING
     ['', ''],#OFFICE CLEANING
     ['', ''],#RESTAURANT CLEANING SERVICES
+#QUICK CLEANING - Residencial
+    [''],#AIRBNB CLEANING
+    ['limpieza hogar'],#APARTAMENT CLEANING
+    ['', ''],#DEEP CLEANING SERVICES
+    ['', ''],#HOUSE CLEANING
+    ['', ''],#MAID CLEANING SERVICES
+    ['', ''],#MAID SERVICES
+    ['', ''],#MOVE OUT CLEANING
+    ['', ''],#POST CONSTRUCTION CLEANING
+    ['', ''],#RENTAL PROPERTY CLEANING SERVICES
+    
     # Agrega más búsquedas aquí si es necesario
 ]
-
+ancho_deseado = 1200
+alto_deseado = 628
 indice_destino = 0
 numero_ruta = 0
-wait = WebDriverWait(driver, 200)  
-def cargar_archivo(archivo):
-    archivo_a_cargar = os.path.join(ruta_imagenes, archivo)
-    # Aquí puedes realizar las operaciones que necesitas con el archivo cargado
-    return archivo_a_cargar
-def cargar_imagen(archivo_a_cargar):
-    # Encontrar el campo de entrada de archivos y cargar la imagen
-    try:
-        file_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@type='file']"))
-        )
-        file_input.send_keys(archivo_a_cargar)
-    except Exception as e:
-        print(f"Ocurrió un error al cargar la imagen: {e}")
-def escalar_imagen():       
-    # Escribir el valor "1200" en la casilla con id "pixels_width"
-    try:
-        width_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "pixels_width"))
-        )
-        width_input.clear()  # Limpiar cualquier valor existente en la casilla
-        width_input.send_keys("1200")
-    except Exception as e:
-        print(f"Ocurrió un error al ingresar el valor en la casilla 'pixels_width': {e}")
-def procesar_imagen():
-    try:
-        # Esperar a que el botón esté presente en la página
-        boton = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "processTask"))
-        )
-        # Hacer clic en el botón
-        boton.click()
-        print("Se hizo clic en el botón con éxito.")
-    except Exception as e:
-        print(f"Ocurrió un error al hacer clic en el botón: {e}")
-def cortar_imagen():
-    try:
-        continue_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//li[@data-title='Continue to Crop IMAGE']"))
-        )
-        continue_button.click()
-        print("Se hizo clic en el botón 'Continue to Crop IMAGE' con éxito.")
-    except Exception as e:
-        print(f"Ocurrió un error al hacer clic en el botón 'Continue to Crop IMAGE': {e}")
-def cambiar_ancho():
-    try:
-        # Esperar a que el campo de entrada de altura esté presente en la página
-        ancho_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "dataWidth"))
-        )
-        ancho_input.clear()  # Limpiar cualquier valor existente en la casilla
-        ancho_input.send_keys("1200")
-        print("Se cambió el ancho (px) a 1200 con éxito.")
-    except Exception as e:
-        print(f"Ocurrió un error al cambiar el ancho (px): {e}")
-def cambiar_altura():
-    try:
-        # Esperar a que el campo de entrada de altura esté presente en la página
-        altura_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "dataHeight"))
-        )
+
+def procesar_imagenes_en_carpeta(carpeta, ancho_deseado, alto_deseado):
+    # Función para redimensionar y recortar una imagen
+    def redimensionar_y_recortar(imagen, ancho, alto):
+        ancho_original, alto_original = imagen.size
+        proporcion = ancho_original / alto_original
+
+        if proporcion > 1:  # La imagen es más ancha que alta
+            nuevo_ancho = ancho
+            nuevo_alto = int(ancho / proporcion)
+        else:  # La imagen es más alta que ancha
+            nuevo_ancho = int(alto * proporcion)
+            nuevo_alto = alto
+
+        imagen_redimensionada = imagen.resize((nuevo_ancho, nuevo_alto))
+
+        izquierda = (nuevo_ancho - ancho) / 2
+        arriba = (nuevo_alto - alto) / 2
+        derecha = (nuevo_ancho + ancho) / 2
+        abajo = (nuevo_alto + alto) / 2
+
+        imagen_recortada = imagen_redimensionada.crop((izquierda, arriba, derecha, abajo))
+        return imagen_recortada
+
+    # Recorrer todos los archivos en la carpeta actual
+    for archivo in os.listdir(carpeta):
+        ruta_completa = os.path.join(carpeta, archivo)
         
-        # Utilizar JavaScript para cambiar el valor del campo directamente
-        driver.execute_script("arguments[0].value = '628';", altura_input)
-        
-        print("Se cambió la altura (px) a 628 con éxito.")
-    except Exception as e:
-        print(f"Ocurrió un error al cambiar la altura (px): {e}")
-def comprimir_imagen():
-    try:
-        comp_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//li[@data-title='Continue to Compress IMAGE']"))
-        )
-        comp_button.click()
-        print("Se hizo clic en el botón 'Continue to Compress IMAGE' con éxito.")
-    except Exception as e:
-        print(f"Ocurrió un error al hacer clic en el botón 'Continue to Compress IMAGE': {e}")
-def descargar_imagen(nombre_archivo):
-    
-    try:
-        # Esperar a que el botón de descarga esté presente en la página
-        download_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.ID, "pickfiles"))
-        )
-        # Hacer clic en el botón de descarga
-        download_button.click()
-        print(f"Se hizo clic en el botón de descarga para {nombre_archivo}.")
-        os.remove(archivo_a_cargar)
-
-    except Exception as e:
-        print(f"Ocurrió un error al hacer clic en el botón de descarga: {e}")
-def mover_archivos_entre_carpetas(ruta_origen, ruta_destino):
-    """le encanta succionar miembros viriles masculinos
-
-    Args:
-        ruta_origen (string): esto es una ruta de carpeta
-        ruta_destino (string): esto es una ruta de carpeta
-    """
-    # Itera sobre los archivos en la carpeta de origen y muévelos a la ruta de destino
-    for archivo in os.listdir(ruta_origen):
-        ruta_archivo_origen = os.path.join(ruta_origen, archivo)
-
-        # Verifica si el elemento en la ruta de origen es un archivo (no es una carpeta)
-        if os.path.isfile(ruta_archivo_origen):
+        # Verificar si el archivo es una imagen válida
+        if archivo.lower().endswith((".jpg", ".jpeg", ".png")):
             try:
-                shutil.move(ruta_archivo_origen, os.path.join(ruta_destino, archivo))
-                print(f"Archivo '{archivo}' movido a {ruta_destino}")
+                imagen = Image.open(ruta_completa)
+                imagen_procesada = redimensionar_y_recortar(imagen, ancho_deseado, alto_deseado)
+
+                # Reemplazar el archivo original con la imagen procesada
+                imagen_procesada.save(ruta_completa)
             except Exception as e:
-                print(f"Error al mover el archivo '{archivo}' a {ruta_destino}: {str(e)}")
+                print(f"Error al procesar {ruta_completa}: {str(e)}")
+
+
+                # Eliminar el archivo dañado
+                os.remove(ruta_completa)
+
+    # Recorrer todas las subcarpetas de manera recursiva
+    for subcarpeta in os.listdir(carpeta):
+        ruta_subcarpeta = os.path.join(carpeta, subcarpeta)
+
+        if os.path.isdir(ruta_subcarpeta):
+            procesar_imagenes_en_carpeta(ruta_subcarpeta, ancho_deseado, alto_deseado)
+
+def procesar_imagenes_en_carpeta_principal(carpeta_principal, ancho_deseado, alto_deseado):
+    procesar_imagenes_en_carpeta(carpeta_principal, ancho_deseado, alto_deseado)
+    print("Proceso de redimensionamiento y recorte completado.")
+
 def modify_metadata_batch(metadata_list):
     def modify_metadata(ruta_archivo, metadata):
         nueva_descripcion = metadata.get('descripcion', '')
@@ -845,17 +608,25 @@ def descargar_imagenes_pexels():
         else:
             print("Error en la búsqueda.")
 
+def id_ya_descargado(imagen_id, archivo='descargados.txt'):
+    with open(archivo, 'a+') as file:
+        file.seek(0)
+        ids = file.readlines()
+        return str(imagen_id) + '\n' in ids
 
-import requests
-import os
+def registrar_id_descargado(imagen_id, archivo='descargados.txt'):
+    with open(archivo, 'a') as file:
+        file.write(str(imagen_id) + '\n')
 
-def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
+def descargar_imagenes_pixabay(cantidad_por_busqueda):
+    global busquedas, rutas_imagenes
+
     api_key = "39882178-93a7eee8f4fa8bb659ed1f39a"  # Reemplaza con tu clave de API de Pixabay
     numero_carpeta = 0
+    
     while numero_carpeta < len(busquedas):
         palabras_clave = busquedas[numero_carpeta]
 
-        # Verificar si la primera palabra clave está vacía
         if palabras_clave[0].strip() == "":
             print("La primera palabra clave está vacía. Saltando a la siguiente búsqueda.")
             numero_carpeta += 1
@@ -863,6 +634,7 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
 
         cantidad_descargar = cantidad_por_busqueda
         pagina = 1
+        
         while cantidad_descargar > 0:
             url = f"https://pixabay.com/api/?key={api_key}&q={'+'.join(palabras_clave)}&per_page=200&page={pagina}"
             response = requests.get(url)
@@ -871,7 +643,6 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
             if "hits" in data:
                 hits = data["hits"]
 
-                # Verificar si no hay más resultados en esta página
                 if len(hits) == 0:
                     print("No se encontraron más imágenes en esta búsqueda. Pasando a la siguiente búsqueda.")
                     break
@@ -880,14 +651,18 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
                     if cantidad_descargar <= 0:
                         break
 
+                    imagen_id = imagen["id"]
+                    if id_ya_descargado(imagen_id):
+                        continue
+
                     imagen_url = imagen["largeImageURL"]
                     response = requests.get(imagen_url)
 
                     if response.status_code == 200:
-                        # Guardar la imagen en la carpeta de descargas
                         with open(os.path.join(rutas_imagenes[numero_carpeta], f"imagen_{i+1}.jpg"), "wb") as file:
                             file.write(response.content)
                         cantidad_descargar -= 1
+                        registrar_id_descargado(imagen_id)
 
                 pagina += 1
             else:
@@ -895,50 +670,37 @@ def descargar_imagenes_pixabay(cantidad_por_busqueda=5):
                 break
 
         numero_carpeta += 1
+def optimize_image(input_path, quality=95, max_size_kb=300):
+    with open(input_path, "rb") as input_file:
+        original_data = input_file.read()
+
+    original_size_kb = len(original_data) / 1024  # Tamaño en KB
+    optimized_data = original_data
+
+    while original_size_kb > max_size_kb and quality > 0:
+        quality -= 5  # Reducir la calidad en 5 unidades
+        optimized_data = pyguetzli.process_jpeg_bytes(original_data, quality)
+        original_size_kb = len(optimized_data) / 1024
+
+    with open(input_path, "wb") as output_file:
+        output_file.write(optimized_data)
+
+    print(f"Imagen optimizada y reemplazada en: {input_path} (Tamaño: {original_size_kb:.2f} KB)")
+
+def process_images_in_directory(carpeta_principal, max_size_kb=300):
+    for root, _, files in os.walk(carpeta_principal):
+        for filename in files:
+            if filename.lower().endswith((".jpg", ".jpeg")):
+                input_path = os.path.join(root, filename)
+                
+                optimize_image(input_path, max_size_kb=max_size_kb)
 
 # Llama a la función para descargar imágenes de Pixabay
-cantidad_por_busqueda = 200  # Puedes ajustar esta cantidad según tus necesidades
+cantidad_por_busqueda = 1  # Puedes ajustar esta cantidad según tus necesidades
 descargar_imagenes_pixabay(cantidad_por_busqueda)
-
-for ruta_imagenes in rutas_imagenes:
-    archivos = os.listdir(ruta_imagenes)  # Obtener la lista de archivos en la carpeta
-
-    # Iterar sobre cada archivo en la carpeta
-    for archivo in archivos:
-        archivo_a_cargar = cargar_archivo(archivo)
-        nombre_archivo = os.path.basename(archivo_a_cargar)  # Obtener el nombre del archivo
-        time.sleep(3)
-        cargar_imagen(archivo_a_cargar)
-        time.sleep(3)
-        escalar_imagen()
-        time.sleep(2)
-        procesar_imagen()
-        wait.until(EC.visibility_of_element_located((By.XPATH, "//li[@data-title='Continue to Crop IMAGE']")))
-        cortar_imagen()
-        time.sleep(3)
-        cambiar_altura()
-        time.sleep(2)
-        cambiar_ancho()
-        time.sleep(3)
-        procesar_imagen()
-        wait.until(EC.visibility_of_element_located((By.XPATH, "//li[@data-title='Continue to Compress IMAGE']")))
-        comprimir_imagen()
-        wait.until(EC.visibility_of_element_located((By.ID, "processTask")))
-        procesar_imagen()
-        wait.until(EC.visibility_of_element_located((By.ID, "pickfiles")))
-        descargar_imagen(nombre_archivo)
-        time.sleep(2)
-        # Después de procesar la imagen y descargarla, mover archivos
-        mover_archivos_entre_carpetas(ruta_origen, rutas_destino[numero_ruta])
-        time.sleep(4)
-
-        # Volver a la página inicial después de procesar una imagen
-        driver.get("https://www.iloveimg.com/resize-image")
-        time.sleep(4)
-
-    numero_ruta += 1
-    print(numero_ruta)
+time.sleep(2)
+procesar_imagenes_en_carpeta_principal(carpeta_principal, ancho_deseado, alto_deseado)
+time.sleep(2)
+process_images_in_directory(carpeta_principal)
 time.sleep(2)
 modify_metadata_batch(metadata_list)
-# Cerrar el navegador después de procesar todas las imágenes
-driver.quit()
